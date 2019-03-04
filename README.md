@@ -7,7 +7,7 @@ El juego acaba cuando te equivocas y pulsas un led que no se ha encendido.
 
 ## Integrantes del equipo
 
-Víctor Rincón (victorrincon), Pablo José Méndez (pablomendezcamino) y Rubén Pleiter (
+Víctor Rincón (victorrinconcalvo), Pablo José Méndez (pablomendezcamino) y Rubén Pleiter (rpleiter).
 
 ## Objetivos del trabajo
 
