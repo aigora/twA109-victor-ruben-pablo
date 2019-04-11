@@ -1,1 +1,10 @@
+#include <stdlib.h> 
+#include <stdio.h> 
+void ENCENDER_LED1(int); // enciende el led 1. posibilidad para incluir en for
+void ENCENDER_LED2(int);
+void ENCENDER_LED3(int);
+void ENCENDER_LED4(int);
+void SONIDO_ACIERTO(void);
+void SONIDO_ERROR(void);
+void ANIMACION(void); //efectos al comienzo y al final (musica + luces)
 
