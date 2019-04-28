@@ -7,4 +7,67 @@ void ENCENDER_LED4(int);
 void SONIDO_ACIERTO(void);
 void SONIDO_ERROR(void);
 void ANIMACION(void); //efectos al comienzo y al final (musica + luces)
+void guardar_puntuacionm(int );
+void comparar_datos_guardar(int );
+void crear_txtPM(void);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void guardar_puntuacionm(intPuntuacionM)
+{
+	int i;
+   	FILE *salida;
+   	salida=fopen("PuntuacionMaxima.txt","wt");
+   	if (salida==NULL)
+   	printf("NO SE HA PODIDO GUARDAR LOS DATOS\n");
+   	else
+   	{   
+	
+	fprintf(salida,"%d\n",PuntuacionM);
+	
+	fclose(salida);
+	}
+}
+void comparar_datos_guardar(int PuntuacionM)
+{
+    int n;
+   	FILE *salida;
+   	salida=fopen("PuntuacionMaxima.txt","rt");
+   	if (salida==NULL)
+   	printf("NO SE HA PODIDO ABRIR FICHERO\n");
+   	else
+   	{   
+	fscanf(salida,"%d",&n);
+	if(PuntuacionM>=n)
+	guardar_puntuacionm(PuntuacionM);
+	fclose(salida);
+	}
+}
+void crear_txtPM(void) //crear archivo para puntuacion maxima
+{
+	int n=0;
+		FILE *salida;
+   	salida=fopen("PuntuacionMaxima.txt","wt");
+   	if (salida==NULL)
+   	printf("NO SE HA PODIDO ABRIR FICHERO\n");
+   	else
+   	{   
+	fprintf(salida,"%d",n);
+	}
+	fclose(salida);
+}
