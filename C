@@ -58,11 +58,16 @@ void comparar_datos_guardar(int PuntuacionM)
 	fclose(salida);
 	}
 }
-void crear_txtPM(void) //crear archivo para puntuacion maxima
+void crear_txtPM(void)
 {
 	int n=0;
 		FILE *salida;
+	salida=fopen("PuntuacionMaxima.txt","rt");	
+	if (salida==NULL)
+	
    	salida=fopen("PuntuacionMaxima.txt","wt");
+   	{
+	   
    	if (salida==NULL)
    	printf("NO SE HA PODIDO ABRIR FICHERO\n");
    	else
@@ -70,4 +75,5 @@ void crear_txtPM(void) //crear archivo para puntuacion maxima
 	fprintf(salida,"%d",n);
 	}
 	fclose(salida);
+}
 }
