@@ -28,6 +28,7 @@ void melodiaError(void);
 void secuenciaError(void);
 void juego(char);
 
+
 void setup()
 {
    pinMode(PULSADOR1, INPUT);
