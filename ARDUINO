@@ -22,12 +22,11 @@ int secuenciaUsuario[NIVEL_MAX];
 
 int generaSecuencia(void);
 void secuenciaCorrecta(void);
-void muestraSecuencia(void);
+void muestraSecuencia(int);
 void leeSecuencia(void);
 void melodiaError(void);
 void secuenciaError(void);
 void juego(char);
-
 
 void setup()
 {
@@ -58,7 +57,7 @@ if (Serial.available()>0)
 
 
 
-void muestraSecuencia(void) //se encienden leds con un sonido distintivo para cada uno a partir del vector secuencia
+void muestraSecuencia(int v) //se encienden leds con un sonido distintivo para cada uno a partir del vector secuencia
 {
 
 
@@ -99,7 +98,7 @@ void muestraSecuencia(void) //se encienden leds con un sonido distintivo para ca
      }
       
       digitalWrite(secuencia[i], HIGH);
-      delay(velocidad);
+      delay(v);
       digitalWrite(secuencia[i], LOW);
       delay(200);
    }
@@ -250,57 +249,59 @@ void secuenciaCorrecta()
 
    if(nivelActual < NIVEL_MAX)
    nivelActual++;
-   velocidad -= 50;
    delay(200);
 }
 void juego(char a)
 {
-  
+ int n; 
   
   if(a=='1')
   {
+    n=700;
       if(nivelActual == 1)
    {
       generaSecuencia();
-      muestraSecuencia();
+      muestraSecuencia(n);
       leeSecuencia();
    }
 
    if(nivelActual != 1)
    {
-      muestraSecuencia();
+      muestraSecuencia(n);
       leeSecuencia();
    }
   }
   
   if(a=='2')
   {
+    n=500;
       if(nivelActual == 1)
    {
       generaSecuencia();
-      muestraSecuencia();
+      muestraSecuencia(n);
       leeSecuencia();
    }
 
    if(nivelActual != 1)
    {
-      muestraSecuencia();
+      muestraSecuencia(n);
       leeSecuencia();
    }
   }
   
   if(a=='3')
   {
+    n=250;
       if(nivelActual == 1)
    {
       generaSecuencia();
-      muestraSecuencia();
+      muestraSecuencia(n);
       leeSecuencia();
    }
 
    if(nivelActual != 1)
    {
-      muestraSecuencia();
+      muestraSecuencia(n);
       leeSecuencia();
    }
   } 
