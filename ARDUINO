@@ -1,1 +1,307 @@
 
+#define PULSADOR1  A0
+#define PULSADOR2  A1
+#define PULSADOR3  A2
+#define PULSADOR4  A3
+
+#define NIVEL_MAX 100
+
+#define LED1  2
+#define LED2 3
+#define LED3  4
+#define LED4  5
+
+#define BUZZER 7
+
+int melodia[ ] = {262, 196, 196, 220, 196, 0, 247, 262};
+int duracionNotas[] = {4, 8, 8, 4, 4, 4, 4, 4};
+int nivelActual = 1;
+int velocidad = 500;
+int secuencia[NIVEL_MAX];
+int secuenciaUsuario[NIVEL_MAX];
+
+int generaSecuencia(void);
+void secuenciaCorrecta(void);
+void muestraSecuencia(void);
+void leeSecuencia(void);
+void melodiaError(void);
+void secuenciaError(void);
+void juego(char);
+
+void setup()
+{
+   pinMode(PULSADOR1, INPUT);
+   pinMode(PULSADOR2, INPUT);
+   pinMode(PULSADOR3, INPUT);
+   pinMode(PULSADOR4, INPUT);
+   pinMode(LED1, OUTPUT);
+   pinMode(LED2, OUTPUT);
+   pinMode(LED3, OUTPUT);
+   pinMode(LED4, OUTPUT);
+   digitalWrite(LED1, LOW);
+   digitalWrite(LED2, LOW);
+   digitalWrite(LED3, LOW);
+   digitalWrite(LED4, LOW);
+}
+
+void loop()
+{
+  char dato; 
+if (Serial.available()>0)  
+{
+  dato=Serial.read();
+  juego(dato); 
+}
+}
+
+
+
+
+void muestraSecuencia(void) //se encienden leds con un sonido distintivo para cada uno a partir del vector secuencia
+{
+
+
+  
+   digitalWrite(LED1, LOW);
+   digitalWrite(LED2, LOW);
+   digitalWrite(LED3, LOW);
+   digitalWrite(LED4, LOW);
+   for(int i = 0; i < nivelActual; i++)
+   {
+    
+      if(secuencia[i] == LED1)
+      {
+         tone(BUZZER, 200);
+         delay(200);
+         noTone(BUZZER);
+      }
+      
+      if(secuencia[i] == LED2)
+      {
+         tone(BUZZER, 300);
+         delay(200);
+         noTone(BUZZER);
+      }
+
+      if(secuencia[i] == LED3)
+      {
+         tone(BUZZER, 400);
+         delay(200);
+         noTone(BUZZER);
+      }
+
+     if(secuencia[i] == LED4)
+     {
+        tone(BUZZER, 500);
+        delay(200);
+        noTone(BUZZER);
+     }
+      
+      digitalWrite(secuencia[i], HIGH);
+      delay(velocidad);
+      digitalWrite(secuencia[i], LOW);
+      delay(200);
+   }
+}
+
+
+
+void leeSecuencia()     // Compara el boton pulsado con el correcto y hace que se encienda el led del boton correspondiente
+{
+   int flag;
+   for(int i = 0; i < nivelActual; i++)
+   {
+     flag = 0;
+      while(flag == 0)
+      {
+       if(digitalRead(PULSADOR4) == LOW)
+       {
+            digitalWrite(LED4, HIGH);
+            tone(BUZZER, 500);
+            delay(300);
+            noTone(BUZZER);
+            secuenciaUsuario[i] = LED4;
+            flag = 1;
+            delay(200);
+            if(secuenciaUsuario[i] != secuencia[i])
+            {
+             secuenciaError();
+             return;
+            }
+            digitalWrite(LED4, LOW);
+         }
+
+         if(digitalRead(PULSADOR3) == LOW)
+         {
+            digitalWrite(LED3, HIGH);
+            tone(BUZZER, 400);
+            delay(300);
+            noTone(BUZZER);
+            secuenciaUsuario[i] = LED3;
+            flag = 1;
+            delay(200);
+            if(secuenciaUsuario[i] != secuencia[i])
+            {
+               secuenciaError();
+               return;
+            }
+            digitalWrite(LED3, LOW);
+         }
+
+         if(digitalRead(PULSADOR2) == LOW)
+         {
+            digitalWrite(LED2, HIGH);
+            tone(BUZZER, 300);
+            delay(300);
+            noTone(BUZZER);
+            secuenciaUsuario[i] = LED2;
+            flag = 1;
+            delay(200);
+            if(secuenciaUsuario[i] != secuencia[i])
+            {
+               secuenciaError();
+               return;
+            }
+            digitalWrite(LED2, LOW);
+         }
+
+         if(digitalRead(PULSADOR1) == LOW)
+         {
+            digitalWrite(LED1, HIGH);
+            tone(BUZZER, 200);
+            delay(300);
+            noTone(BUZZER);
+            secuenciaUsuario[i] = LED1;
+            flag = 1;
+            delay(200);
+            if(secuenciaUsuario[i] != secuencia[i])
+            {
+               secuenciaError();
+               return;
+            }
+            digitalWrite(LED1, LOW);
+         }
+      }
+      
+}
+
+   secuenciaCorrecta();
+
+}
+
+
+
+int generaSecuencia(void) // pide y recibe del la secuencia
+{
+  int i,v,n;
+  char dato;
+n=0;
+
+
+  
+for(i=0;i<NIVEL_MAX;i++)
+{
+secuencia[i] = random(2,6);
+}
+n=1;
+   
+  return n;
+}
+
+
+
+void melodiaError() 
+{
+  int i,duracionNota,pausaEntreNotas;
+   for(i = 0; i < 8; i++)
+   {
+      duracionNota = 1000/duracionNotas[i];
+      tone(BUZZER, melodia[i],duracionNotas);
+      pausaEntreNotas = duracionNota * 1.30;
+      delay(pausaEntreNotas);
+      noTone(BUZZER);
+   }
+}
+
+
+
+void secuenciaError()
+{
+   digitalWrite(LED1, HIGH);
+   digitalWrite(LED2, HIGH);
+   digitalWrite(LED3, HIGH);
+   digitalWrite(LED4, HIGH);
+   delay(250);
+   digitalWrite(LED1, LOW);
+   digitalWrite(LED2, LOW);
+   digitalWrite(LED3, LOW);
+   digitalWrite(LED4, LOW);
+   delay(250);
+   melodiaError();
+   nivelActual = 1;
+   velocidad = 500;
+}
+
+
+
+void secuenciaCorrecta()
+{
+
+   if(nivelActual < NIVEL_MAX)
+   nivelActual++;
+   velocidad -= 50;
+   delay(200);
+}
+void juego(char a)
+{
+  
+  
+  if(a=='1')
+  {
+      if(nivelActual == 1)
+   {
+      generaSecuencia();
+      muestraSecuencia();
+      leeSecuencia();
+   }
+
+   if(nivelActual != 1)
+   {
+      muestraSecuencia();
+      leeSecuencia();
+   }
+  }
+  
+  if(a=='2')
+  {
+      if(nivelActual == 1)
+   {
+      generaSecuencia();
+      muestraSecuencia();
+      leeSecuencia();
+   }
+
+   if(nivelActual != 1)
+   {
+      muestraSecuencia();
+      leeSecuencia();
+   }
+  }
+  
+  if(a=='3')
+  {
+      if(nivelActual == 1)
+   {
+      generaSecuencia();
+      muestraSecuencia();
+      leeSecuencia();
+   }
+
+   if(nivelActual != 1)
+   {
+      muestraSecuencia();
+      leeSecuencia();
+   }
+  } 
+
+}
