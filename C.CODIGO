@@ -1,0 +1,128 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h> 
+#include "SerialPort.h" 
+#define MAX_DATA_LENGTH 255
+#define NIVEL_MAX 100 
+// Funciones prototipo 
+void autoConnect(SerialPort *arduino,char*); 
+void enviar_patron(void);
+ int main(void) 
+ {   
+ //Arduino SerialPort object   
+ SerialPort *arduino;   
+ // Puerto serie en el que está Arduino   
+ char* portName = "\\\\.\\COM4";   
+ // Buffer para datos procedentes de Arduino   
+ char incomingData[MAX_DATA_LENGTH];      
+ // Crear estructura de datos del puerto serie   
+ arduino = (SerialPort *)malloc(sizeof(SerialPort));   // Apertura del puerto serie   
+ Crear_Conexion(arduino,portName); 
+ autoConnect(arduino,incomingData); 
+ return 0; 
+ } 
+ void autoConnect(SerialPort *arduino,char *incomingData) 
+ {     
+ int readResult=0; 
+char c;
+int i,n;
+int flagg=0;
+int up;
+int secuencia[NIVEL_MAX];
+int a=0;
+int opcion;
+ char sendData = 0;       
+ // Espera la conexión con Arduino   
+ while (!isConnected(arduino))   
+ {   
+ Sleep(100);   
+ Crear_Conexion(arduino,arduino->portName);  
+ } 
+//Comprueba si arduino está connectado  
+if (isConnected(arduino))   
+{    
+printf ("Conectado con Arduino en el puerto %s\n",arduino->portName);  
+} 
+// Bucle de la aplicación     
+
+printf("Bienvenidos al fantastico 'Memory Game'\n ");
+
+do
+{
+
+printf("NORMAS \n");
+printf("Elige una dificultad\n");
+printf("1 - facil \n");
+printf("2 - media \n");
+printf("3 - extrema\n");
+scanf("%d",&opcion);
+fflush(stdin);
+
+}while(opcion!= 1 && opcion!=2 && opcion!=3);
+while (isConnected(arduino))
+{
+
+switch (opcion)
+{
+	case 1: 
+	{
+	
+		sendData = '1'; 
+writeSerialPort(arduino,&sendData, sizeof(char));
+
+
+	}
+		break;
+	case 2:
+		{
+				sendData = '2'; 
+                writeSerialPort(arduino,&sendData, sizeof(char));
+		}
+	    break;
+	case 3:
+	{
+			sendData = '3'; 
+writeSerialPort(arduino,&sendData, sizeof(char));
+
+			}
+	}
+	}		
+
+printf("CONTINUA");
+
+if (!isConnected(arduino))    
+printf ("Se ha perdido la conexión con Arduino\n"); 
+
+}
+void enviar_patron(void)
+{
+	int i,n;
+	char sendData;
+	
+	for(i=0;i<NIVEL_MAX;i++)
+	{
+	n=rand() % 4;
+	if(n==0)
+	{
+	sendData='2'  ;
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==1)
+	{
+		sendData='3'  ;
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==2)
+	{
+		sendData='4'  ;
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==3)
+	{
+		sendData='5'   ;
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	}
+}
+
