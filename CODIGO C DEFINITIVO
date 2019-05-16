@@ -1,0 +1,297 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <SerialPort.h>
+#define MAX_DATA_LENGTH 255
+#define NIVEL_MAX 100
+// Funciones prototipo
+void autoConnect(SerialPort *arduino,char*);
+void guardar_puntuacionm(int ,int, int);
+void comparar_datos_guardar(int ,int);
+char menu(void);
+int main(void)
+{
+ //Arduino SerialPort object
+ SerialPort *arduino;
+ // Puerto serie en el que está Arduino
+ char* portName = "\\\\.\\COM4";
+ // Buffer para datos procedentes de Arduino
+ char incomingData[MAX_DATA_LENGTH];
+
+ // Crear estructura de datos del puerto serie
+ arduino = (SerialPort *)malloc(sizeof(SerialPort));
+ // Apertura del puerto serie
+ Crear_Conexion(arduino,portName);
+ autoConnect(arduino,incomingData);
+ return 0;
+}
+void autoConnect(SerialPort *arduino,char *incomingData)
+{
+ 
+
+// Espera la conexión con Arduino
+while (!isConnected(arduino))
+{
+Sleep(100);
+Crear_Conexion(arduino,arduino->portName);
+}
+ //Comprueba si arduino está connectado
+if (isConnected(arduino))
+{
+ printf ("Conectado con Arduino en el puerto %s\n",arduino->portName);
+}
+ // Bucle de la aplicación
+
+	printf("Bienvenidos al fantastico Memory Game\n");
+
+char sendData = 0;
+int i,n;
+int readResult=0;
+int contador=0;
+int puntos=0;
+char opcion;
+int eleccion;
+do
+{
+	
+
+opcion=menu();
+switch (opcion)
+{
+	case '1': 
+	{	
+	eleccion=1;
+sendData = '1'; 
+writeSerialPort(arduino,&sendData, sizeof(char)); 
+//////////////////////////////////////////
+for(i=0;i<NIVEL_MAX;i++)
+	{
+	while(readResult==0)
+{
+	 readResult = readSerialPort(arduino,incomingData, MAX_DATA_LENGTH);   
+}
+	n=rand() % 4;
+	if(n==0)
+	{
+	sendData='2';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==1)
+	{
+	sendData='3';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==2)
+	{
+	sendData='4';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==3)
+	{
+	sendData='5';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	readResult=0;
+		
+	}
+	
+//////////////////////////////////////////
+	}
+		break;
+	case '2':
+		{
+			eleccion=2;
+				sendData = '2'; 
+                writeSerialPort(arduino,&sendData, sizeof(char));
+               //////////////////////////////////////////
+for(i=0;i<NIVEL_MAX;i++)
+	{
+	while(readResult==0)
+{
+	 readResult = readSerialPort(arduino,incomingData, MAX_DATA_LENGTH);   
+}	
+	n=rand() % 4;
+	if(n==0)
+	{
+	sendData='2';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==1)
+	{
+	sendData='3';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==2)
+	{
+	sendData='4';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==3)
+	{
+	sendData='5';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	readResult=0;
+	
+	}	
+//////////////////////////////////////////
+               
+		}
+	    break;
+	case '3':
+	{
+		eleccion=3;
+			sendData = '3'; 
+writeSerialPort(arduino,&sendData, sizeof(char));
+//////////////////////////////////////////
+for(i=0;i<NIVEL_MAX;i++)
+	{
+	while(readResult==0)
+{
+	 readResult = readSerialPort(arduino,incomingData, MAX_DATA_LENGTH);   
+}	
+	n=rand() % 4;
+	if(n==0)
+	{
+	sendData='2';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==1)
+	{
+	sendData='3';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==2)
+	{
+	sendData='4';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	if(n==3)
+	{
+	sendData='5';
+	writeSerialPort(arduino,&sendData, sizeof(char));    
+	}
+	readResult=0;
+	
+	
+	}
+	
+//////////////////////////////////////////
+
+			
+	}break;
+	case '4':break;
+    default: printf("Opcion incorrecta, elija de nuevo\n");	
+	}
+	if(opcion=='3' || opcion=='2' || opcion=='1' )
+	{
+printf("Comienza el juego\n");
+		while(readResult==0 && contador==0  )
+{
+	readResult = readSerialPort(arduino,incomingData, MAX_DATA_LENGTH);   
+	if(incomingData[0]=='2')
+	puntos++;
+	if(incomingData[0]=='8') 
+	{
+		contador++;		
+	}	
+	readResult=0;
+}
+
+printf("Enhorabuena has conseguido %d puntos\n",puntos);
+comparar_datos_guardar(puntos,eleccion);	
+}
+	}while(opcion!='4');
+
+
+
+
+if (!isConnected(arduino))
+ printf ("Se ha perdido la conexión con Arduino\n");
+}
+
+/////////////////////
+void guardar_puntuacionm(int n,int n1,int n2)
+
+{
+
+	int i;
+   	FILE *salida;
+   	salida=fopen("PuntuacionMaxima.txt","wt");
+   	if (salida==NULL)
+   	printf("NO SE HA PODIDO GUARDAR LOS DATOS\n");
+   	else
+   	{   
+   	fprintf(salida,"%d %d %d",n,n1,n2);
+	}
+	fclose(salida);
+
+	}
+
+
+
+void comparar_datos_guardar(int PuntuacionM,int ab)
+{
+    int n,n1,n2;
+   	FILE *entrada;
+   	entrada=fopen("PuntuacionMaxima.txt","rt");
+   	if (entrada==NULL)
+	{
+   	printf("No existen registros previos, creando archivo nuevo\n");
+	guardar_puntuacionm(0,0,0);
+    comparar_datos_guardar(PuntuacionM,ab);
+	}
+   	else
+
+   	{   
+	fscanf(entrada,"%d",&n);
+	fscanf(entrada,"%d",&n1);
+	fscanf(entrada,"%d",&n2);
+	switch(ab)
+	{
+		case 1: 
+	if(PuntuacionM>=n)
+	{
+	n=PuntuacionM;
+    printf("Nueva puntuacion maxima en nivel FACIL\n");
+	guardar_puntuacionm(n,n1,n2);
+    }    
+    else
+    printf("Casi superas el record, sigue intentandolo \n");
+    break;
+    case 2:if(PuntuacionM>=n1)
+	{
+	n1=PuntuacionM;
+    printf("Nueva puntuacion maxima en nivel MEDIO\n");
+	guardar_puntuacionm(n,n1,n2);
+    }    
+    else
+    printf("Casi superas el record, sigue intentandolo \n");
+    break;
+    case 3:if(PuntuacionM>=n2)
+	{
+	n2=PuntuacionM;
+    printf("Nueva puntuacion maxima en nivel EXTREMO\n");
+	guardar_puntuacionm(n,n1,n2);
+    }    
+    else
+    printf("Casi superas el record, sigue intentandolo \n");
+    break;	
+	}
+	fclose(entrada);
+
+}
+	}
+/////////////////////
+char menu(void)
+{
+	char opcion;
+printf("Elige la dificultad (aumenta la velocidad)\n");
+printf("Elige una dificultad\n");
+printf("1 - facil \n");
+printf("2 - media \n");
+printf("3 - dificil\n");
+printf("4 - salir\n");
+opcion=getch();
+	return opcion;
+}
