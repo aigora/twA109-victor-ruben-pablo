@@ -61,7 +61,7 @@ switch (opcion)
 	case '1': 
 	{	
 	eleccion=1;
-	printf("Iniciando modo facil");
+	printf("Iniciando modo facil\n");
 sendData = '1'; 
 writeSerialPort(arduino,&sendData, sizeof(char)); 
 //////////////////////////////////////////
@@ -101,7 +101,7 @@ for(i=0;i<NIVEL_MAX;i++)
 		break;
 	case '2':
 		{
-		printf("Iniciando modo medio");
+		printf("Iniciando modo medio\n");
 			eleccion=2;
 				sendData = '2'; 
                 writeSerialPort(arduino,&sendData, sizeof(char));
@@ -142,7 +142,7 @@ for(i=0;i<NIVEL_MAX;i++)
 	    break;
 	case '3':
 	{
-	printf("Iniciando modo extremo");
+	printf("Iniciando modo extremo\n");
 		eleccion=3;
 			sendData = '3'; 
 writeSerialPort(arduino,&sendData, sizeof(char));
@@ -289,7 +289,6 @@ void comparar_datos_guardar(int PuntuacionM,int ab)
 char menu(void)
 {
 	char opcion;
-printf("Elige la dificultad (aumenta la velocidad)\n");
 printf("Elige una dificultad\n");
 printf("1 - facil \n");
 printf("2 - media \n");
