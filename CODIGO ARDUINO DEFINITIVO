@@ -1,0 +1,311 @@
+
+#define PULSADOR1  A3
+#define PULSADOR2  A2
+#define PULSADOR3  A1
+#define PULSADOR4  A0
+
+#define NIVEL_MAX 100
+
+#define LED1  2
+#define LED2 3
+#define LED3  4
+#define LED4  5
+
+#define BUZZER 7
+
+void generaSecuencia(int,int []);
+int secuenciaCorrecta(int,int);
+void muestraSecuencia(int,int,int []);
+int leeSecuencia(int *,int,int,int []);
+void melodiaError(void);
+void secuenciaError(void);
+void juego(char,int []);
+void juego1(int,int []);
+
+void setup()
+{
+   Serial.begin(9600);
+   pinMode(PULSADOR1, INPUT);
+   pinMode(PULSADOR2, INPUT);
+   pinMode(PULSADOR3, INPUT);
+   pinMode(PULSADOR4, INPUT);
+   pinMode(LED1, OUTPUT);
+   pinMode(LED2, OUTPUT);
+   pinMode(LED3, OUTPUT);
+   pinMode(LED4, OUTPUT);
+   pinMode(BUZZER, OUTPUT);
+   digitalWrite(LED1, LOW);
+   digitalWrite(LED2, LOW);
+   digitalWrite(LED3, LOW);
+   digitalWrite(LED4, LOW);
+}
+
+void loop()
+{
+  char dato; 
+  int v=99; 
+  int secuencia[NIVEL_MAX];
+if (Serial.available() > 0)  //recibe del ordenador el char correspondiente al modo
+{      
+  
+  dato=Serial.read();
+  generaSecuencia(v,secuencia);
+  juego(dato,secuencia); 
+}
+}
+
+
+void muestraSecuencia(int gameover,int nivelActual,int secuencia[]) //se encienden leds con un sonido distintivo para cada uno a partir del vector secuencia
+{ 
+   digitalWrite(LED1, LOW);
+   digitalWrite(LED2, LOW);
+   digitalWrite(LED3, LOW);
+   digitalWrite(LED4, LOW);
+   
+   if(gameover==0)
+    {         
+   for(int i = 0; i < nivelActual; i++)
+   {   
+      if(secuencia[i] == LED1)
+      {
+         tone(BUZZER, 200);
+         delay(200);
+         noTone(BUZZER);
+      }
+      
+      if(secuencia[i] == LED2)
+      {
+         tone(BUZZER, 300);
+         delay(200);
+         noTone(BUZZER);
+      }
+
+      if(secuencia[i] == LED3)
+      {
+         tone(BUZZER, 400);
+         delay(200);
+         noTone(BUZZER);
+      }
+
+     if(secuencia[i] == LED4)
+     {
+        tone(BUZZER, 500);
+        delay(200);
+        noTone(BUZZER);
+     }
+      
+      digitalWrite(secuencia[i], HIGH);
+      delay(250);
+      digitalWrite(secuencia[i], LOW);
+      delay(150);
+   }
+}
+ }
+
+int leeSecuencia(int *go,int nivelActual,int a,int secuencia[])     // Compara el boton pulsado con el correcto y hace que se encienda el led del boton correspondiente
+{
+   int flag;
+   int secuenciaUsuario[NIVEL_MAX];
+   int i,j;
+   int  gameover;
+    gameover=*go;
+   if(gameover==0)
+   {         
+   for(i = 0; i < nivelActual && gameover==0; i++)
+   {
+     flag = 0;
+      while(flag == 0)
+      {     
+       if(digitalRead(PULSADOR4) == LOW)
+       {
+            digitalWrite(LED4, HIGH);
+            tone(BUZZER, 500);
+            delay(300);
+            noTone(BUZZER);
+            secuenciaUsuario[i] = LED4;
+            flag = 1;
+            delay(100);
+            if(secuenciaUsuario[i] != secuencia[i])
+            {
+              gameover=1;
+             secuenciaError();
+             
+            }
+            digitalWrite(LED4, LOW);
+         }
+
+         if(digitalRead(PULSADOR3) == LOW)
+         {
+            digitalWrite(LED3, HIGH);
+            tone(BUZZER, 400);
+            delay(300);
+            noTone(BUZZER);
+            secuenciaUsuario[i] = LED3;
+            flag = 1;
+            delay(100);
+            if(secuenciaUsuario[i] != secuencia[i])
+            {
+              gameover=1;
+              secuenciaError();            
+            }
+            digitalWrite(LED3, LOW);
+         }
+
+         if(digitalRead(PULSADOR2) == LOW)
+         {
+            digitalWrite(LED2, HIGH);
+            tone(BUZZER, 300);
+            delay(300);
+            noTone(BUZZER);
+            secuenciaUsuario[i] = LED2;
+            flag = 1;
+            delay(100);
+            if(secuenciaUsuario[i] != secuencia[i])
+            {
+              gameover=1;
+              secuenciaError();
+               
+            }
+            digitalWrite(LED2, LOW);
+         }
+
+         if(digitalRead(PULSADOR1) == LOW)
+         {
+            digitalWrite(LED1, HIGH);
+            tone(BUZZER, 200);
+            delay(300);
+            noTone(BUZZER);
+            secuenciaUsuario[i] = LED1;
+            flag = 1;
+            delay(100);
+            if(secuenciaUsuario[i] != secuencia[i])
+            {
+              gameover=1;
+               secuenciaError();
+              
+            }
+            digitalWrite(LED1, LOW);
+         }
+      }
+    }  
+    nivelActual=secuenciaCorrecta(nivelActual,a);
+}
+ *go=gameover;
+return nivelActual;
+}
+
+
+
+void generaSecuencia(int a,int secuencia[]) // pide y recibe del la secuencia
+{
+  int i,j,v,n;
+  char dato;
+ j=0;
+ Serial.println('1'); 
+for(i=0;i<NIVEL_MAX-a;i++)
+{
+  dato=0;
+  while(dato==0) 
+  {
+  dato=Serial.read();
+  v=dato-48;
+  if(v==2 || v==3 || v==4 || v==5)
+  secuencia[i]=v;
+  }
+   Serial.println('1');
+   delay(10);
+}
+}
+
+
+
+void melodiaError(void) 
+{
+  int duracionNotas[] = {4, 8, 8, 4, 4, 4, 4, 4};
+  int melodia[ ] = {262, 196, 196, 220, 196, 196, 247, 262};
+  int i,duracionNota,pausaEntreNotas;
+  
+   for(i = 0; i < 8; i++) 
+   {
+      duracionNota = 1000/duracionNotas[i];
+      tone(BUZZER,melodia[i],duracionNotas);
+      pausaEntreNotas = duracionNota * 1.30;
+      delay(pausaEntreNotas);
+      noTone(BUZZER);
+      
+   }
+   
+}
+
+
+
+void secuenciaError(void)
+{
+   digitalWrite(LED1, HIGH);
+   digitalWrite(LED2, HIGH);
+   digitalWrite(LED3, HIGH);
+   digitalWrite(LED4, HIGH);
+   delay(250);
+   digitalWrite(LED1, LOW);
+   digitalWrite(LED2, LOW);
+   digitalWrite(LED3, LOW);
+   digitalWrite(LED4, LOW);
+   delay(250);
+   melodiaError();
+   Serial.println('8');
+   Serial.println('8');
+}
+
+
+int secuenciaCorrecta(int nivelActual,int a)
+{
+   if(nivelActual < NIVEL_MAX)
+   nivelActual=nivelActual+a;
+   Serial.println('2');
+   delay(150);
+return nivelActual;
+}
+void juego(char a,int v[]) // modo
+{
+ int n=0; 
+  if(a=='1')
+  {
+    n=1;
+    juego1(n,v);
+  }
+  
+  if(a=='2')
+  {
+    n=2;
+    juego1(n,v);
+  }
+  
+  if(a=='3')
+  {
+    n=5; 
+   juego1(n,v);
+   
+}
+  
+}
+void juego1(int a,int s[])
+{
+int gameover=0;
+int nivelActual=1;
+int v=0;
+  while(gameover==0)
+    {
+   if(nivelActual == 1)
+   {
+    generaSecuencia(v,s);
+    muestraSecuencia(gameover,nivelActual,s);
+    nivelActual=leeSecuencia(&gameover,nivelActual,a,s);
+   }
+
+   if(nivelActual != 1)
+   {    
+      muestraSecuencia(gameover,nivelActual,s);
+      nivelActual=leeSecuencia(&gameover,nivelActual,a,s);
+   }
+}
+}
